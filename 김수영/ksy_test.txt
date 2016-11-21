@@ -1,0 +1,58 @@
+http://dev.px4.io/starting-building.html 
+this is done when the pixhawk is connected directly (by usb) 
+
+roslaunch mavros px4.launch fcu_url:="udp://:14540@192.168.1.36:14557"
+roslaunch mavros px4.launch fcu_url:="udp://:14540@127.0.0.1:14557"
+
+
+ls /dev/tty* -> /dev/ttyACM0 (main pixhawk USB)
+	     -> /dev/ttyUSB0 (FTDI pixhawk -telemetry)
+  	     
+http://dev.px4.io/tutorial-hello-sky.html 
+from this 
+http://dev.px4.io/advanced-system-console.html
+don't know how to do that
+
+http://mansoo-sw.blogspot.kr/2016/10/drone-gazebo-ros.html
+overview of how to use gazebo with ROS
+
+qground with gazebo with px4 
+http://stmoon.github.io/hils-hardware-in-the-loop-siseutem-gucughagi/
+
+error while qground install (not a appimage version archived version only)
+/home/swimming/Desktop/qgroundcontrol/QGroundControl: error while loading shared libraries: libSDL-1.2.so.0: cannot open shared object file: No such file or directory
+->sudo apt-get update" followed by "sudo apt-get install --reinstall libsdl1.2debian
++ command this 
+sudo usermod -a -G dialout $USER
+sudo apt-get remove modemmanager
+
+nuttx shell problem
+https://groups.google.com/forum/#!msg/px4users/XH9-Tpmd1XY/XnYOFifVDAAJ
+
+FOR nuttx shell (nsh>)
+http://cafe.naver.com/ravenfury.cafe?iframe_url=/ArticleRead.nhn%3Fclubid=28123433%26menuid=7%26boardtype=W%26page=1%26articleid=27%26referrerAllArticles=false
+Found board 9,0 bootloader rev 4 on /dev/serial/by-id/usb-3D_Robotics_PX4_BL_FMU_v2.x_0-if00
+
+
+qground - parameter sys-companion osd(57600)-> companion link 921600 changed
+
+rosrun mavros mavros_node _fcu_url:="/dev/ttyUSB0:921600"
+rosrun mavros mavsafety arm
+
+roscore
+make posix_sitl_default gazebo
+roslaunch modudculab_ros ctrl_pos_gazebo.launch - just 2m upper
+roslaunch modudculab_ros ctrl_traj_test.launch - auto start
+roslaunch modudculab_ros ctrl_attitude_gazebo.launch - nothing
+
+
+rosrun mavros mavsafety arm
+rosrun mavros mavsys mode -c OFFBOARD
+
+cd ~/catkin_ws/src/Firmware
+make posix_sitl_default gazebo
+roslaunch face_detect_pkg self_camera.launch
+rosrun mavros mavsafety arm
+rosrun mavros mavsys mode -c OFFBOARD
+
+

@@ -1,20 +1,28 @@
 cmake_minimum_required(VERSION 2.8.3)
-project(face_detect_pkg)
+project(image_node)
 
 ## Find catkin macros and libraries
 ## if COMPONENTS list like find_package(catkin REQUIRED COMPONENTS xyz)
 ## is used, also find other catkin packages
+
+LINK_DIRECTORIES("/usr/local/lib")
+set(CMAKE_CXX_FLAGS "-std=c++11 ${CMAKE_CXX_FLAGS}")
+set(CMAKE_MODULE_PATH "/usr/local/lib/cmake/${CMAKE_MODULE_PATH}")
+
+
 find_package(catkin REQUIRED COMPONENTS
   cv_bridge
   image_geometry
   image_transport
+  message_generation
+  message_runtime
   roscpp
   rosmsg
   sensor_msgs
   std_msgs
-  message_generation
-  message_runtime
 )
+find_package(raspicam REQUIRED)
+find_package(OpenCV)
 add_message_files(
   FILES
   centerMsg.msg
@@ -24,11 +32,13 @@ generate_messages(
    std_msgs
 )
 
+
 ## System dependencies are found with CMake's conventions
 # find_package(Boost REQUIRED COMPONENTS system)
 
 
 ## Uncomment this if the package has a setup.py. This macro ensures
+## modules and global scripts declared therein get installed
 ## See http://ros.org/doc/api/catkin/html/user_guide/setup_dot_py.html
 # catkin_python_setup()
 
@@ -80,7 +90,7 @@ generate_messages(
 ## Generate added messages and services with any dependencies listed here
 # generate_messages(
 #   DEPENDENCIES
-#   sensor_msgs#   std_msgs
+#   sensor_msgs
 # )
 
 ################################################
@@ -114,8 +124,8 @@ generate_messages(
 ## DEPENDS: system dependencies of this project that dependent projects also need
 catkin_package(
   INCLUDE_DIRS include
-  LIBRARIES face_detect_pkg
-  CATKIN_DEPENDS cv_bridge image_geometry image_transport message_generation roscpp rosmsg sensor_msgs std_msgs
+  LIBRARIES image_node
+  CATKIN_DEPENDS cv_bridge image_geometry image_transport message_generation message_runtime roscpp rosmsg sensor_msgs std_msgs
   DEPENDS system_lib
 )
 
@@ -129,27 +139,28 @@ catkin_package(
 include_directories(
   ${catkin_INCLUDE_DIRS}
 )
-set(CMAKE_CXX_FLAGS "-std=c++11 ${CMAKE_CXX_FLAGS}")
+
+
 
 ## Declare a C++ library
-# add_library(face_detect_pkg
-#   src/${PROJECT_NAME}/face_detect_pkg.cpp
+# add_library(image_node
+#   src/${PROJECT_NAME}/image_node.cpp
 # )
 
 ## Add cmake target dependencies of the library
 ## as an example, code may need to be generated before libraries
 ## either from message generation or dynamic reconfigure
-# add_dependencies(face_detect_pkg ${${PROJECT_NAME}_EXPORTED_TARGETS} ${catkin_EXPORTED_TARGETS})
+# add_dependencies(image_node ${${PROJECT_NAME}_EXPORTED_TARGETS} ${catkin_EXPORTED_TARGETS})
 
 ## Declare a C++ executable
-# add_executable(face_detect_pkg_node src/face_detect_pkg_node.cpp)
+# add_executable(image_node_node src/image_node_node.cpp)
 
 ## Add cmake target dependencies of the executable
 ## same as for the library above
-# add_dependencies(face_detect_pkg_node ${${PROJECT_NAME}_EXPORTED_TARGETS} ${catkin_EXPORTED_TARGETS})
+# add_dependencies(image_node_node ${${PROJECT_NAME}_EXPORTED_TARGETS} ${catkin_EXPORTED_TARGETS})
 
 ## Specify libraries to link a library or executable target against
-# target_link_libraries(face_detect_pkg_node
+# target_link_libraries(image_node_node
 #   ${catkin_LIBRARIES}
 # )
 
@@ -168,7 +179,7 @@ set(CMAKE_CXX_FLAGS "-std=c++11 ${CMAKE_CXX_FLAGS}")
 # )
 
 ## Mark executables and/or libraries for installation
-# install(TARGETS face_detect_pkg face_detect_pkg_node
+# install(TARGETS image_node image_node_node
 #   ARCHIVE DESTINATION ${CATKIN_PACKAGE_LIB_DESTINATION}
 #   LIBRARY DESTINATION ${CATKIN_PACKAGE_LIB_DESTINATION}
 #   RUNTIME DESTINATION ${CATKIN_PACKAGE_BIN_DESTINATION}
@@ -193,14 +204,17 @@ set(CMAKE_CXX_FLAGS "-std=c++11 ${CMAKE_CXX_FLAGS}")
 #############
 
 ## Add gtest based cpp test target and link libraries
-# catkin_add_gtest(${PROJECT_NAME}-test test/test_face_detect_pkg.cpp)
+# catkin_add_gtest(${PROJECT_NAME}-test test/test_image_node.cpp)
 # if(TARGET ${PROJECT_NAME}-test)
 #   target_link_libraries(${PROJECT_NAME}-test ${PROJECT_NAME})
 # endif()
+add_executable(image_pkg_node src/main.cpp src/SW_detection.cpp)
+target_link_libraries(image_pkg_node ${catkin_LIBRARIES} ${raspicam_CV_LIBS})
+target_link_libraries(image_pkg_node "/usr/local/lib/libraspicam_cv.so")
+target_link_libraries(image_pkg_node "/usr/local/lib/libraspicam.so")
+target_link_libraries(image_pkg_node "/usr/local/lib/libraspicam.so.0.1")
+target_link_libraries(image_pkg_node "/usr/local/lib/libraspicam.so.0.1.2")
+add_dependencies(image_pkg_node simple_tracking_generate_messages_cpp)
 
 ## Add folders to be run by python nosetests
 # catkin_add_nosetests(test)
-add_executable(face_detect_pkg_node src/main.cpp src/SW_detection.cpp)
-target_link_libraries(face_detect_pkg_node ${catkin_LIBRARIES})
-add_dependencies(face_detect_pkg_node simple_tracking_generate_messages_cpp)
-## modules and global scripts declared therein get installed

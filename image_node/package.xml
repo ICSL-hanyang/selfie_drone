@@ -1,13 +1,13 @@
 <?xml version="1.0"?>
 <package>
-  <name>face_detect_pkg</name>
+  <name>image_node</name>
   <version>0.0.0</version>
-  <description>The face_detect_pkg package</description>
+  <description>The image_node package</description>
 
   <!-- One maintainer tag required, multiple allowed, one person per tag --> 
   <!-- Example:  -->
   <!-- <maintainer email="jane.doe@example.com">Jane Doe</maintainer> -->
-  <maintainer email="swimming@todo.todo">swimming</maintainer>
+  <maintainer email="raspberry@todo.todo">raspberry</maintainer>
 
 
   <!-- One license tag required, multiple allowed, one license per tag -->
@@ -19,7 +19,7 @@
   <!-- Url tags are optional, but mutiple are allowed, one per tag -->
   <!-- Optional attribute type can be: website, bugtracker, or repository -->
   <!-- Example: -->
-  <!-- <url type="website">http://wiki.ros.org/face_detect_pkg</url> -->
+  <!-- <url type="website">http://wiki.ros.org/image_node</url> -->
 
 
   <!-- Author tags are optional, mutiple are allowed, one per tag -->
@@ -44,16 +44,17 @@
   <build_depend>image_geometry</build_depend>
   <build_depend>image_transport</build_depend>
   <build_depend>message_generation</build_depend>
+  <build_depend>message_runtime</build_depend>
   <build_depend>roscpp</build_depend>
   <build_depend>rosmsg</build_depend>
   <build_depend>sensor_msgs</build_depend>
   <build_depend>std_msgs</build_depend>
 
-  <run_depend>message_generation</run_depend>
-  <run_depend>message_runtime</run_depend>
   <run_depend>cv_bridge</run_depend>
   <run_depend>image_geometry</run_depend>
   <run_depend>image_transport</run_depend>
+  <run_depend>message_runtime</run_depend>
+  <run_depend>message_generation</run_depend>
   <run_depend>roscpp</run_depend>
   <run_depend>rosmsg</run_depend>
   <run_depend>sensor_msgs</run_depend>

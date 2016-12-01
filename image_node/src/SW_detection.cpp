@@ -2,9 +2,8 @@
 
 const double SW_detection::TICK_FREQUENCY = cv::getTickFrequency();
 
-SW_detection::SW_detection(const std::string cascadeFilePath, cv::VideoCapture &videoCapture)
+SW_detection::SW_detection(const std::string cascadeFilePath)
 {
-	capture = &videoCapture;
 	if (faceCascade == NULL) {
 		faceCascade = new cv::CascadeClassifier(cascadeFilePath);
 	}
@@ -17,21 +16,11 @@ SW_detection::SW_detection(const std::string cascadeFilePath, cv::VideoCapture &
 			<< cascadeFilePath << " exists." << std::endl;
 	}
 }
-SW_detection::SW_detection(cv::VideoCapture &videoCapture)
+void SW_detection::frame_input(cv::Mat &image)
 {
-	capture = &videoCapture;
-	cout << "type actual width of object : ";
-	cin >> actual_width;
+    face_frame = image.clone();
 }
-cv::Mat& SW_detection::operator >>(cv::Mat &frame) // get frame;
-{
-	*capture >> frame;
-	mid.x = frame.size().width / 2;
-	mid.y = frame.size().height / 2;
-	//frame.copyTo(face_frame);
-	face_frame = frame.clone();
-	return frame;
-}
+
 cv::Point SW_detection::detect_face()
 {
 	m_scale = (double)std::min(320, face_frame.cols) / face_frame.cols;
@@ -51,15 +40,7 @@ cv::Point SW_detection::detect_face()
 	}
 	return m_facePosition;
 }
-cv::Mat SW_detection::imgproc_shape_detection()
-{
-	cvtColor(face_frame, gray_image, CV_BGR2GRAY);
-	Canny(gray_image, bw, 50, 240, 3); // meaning of third and fourth value :  / 
-	cv::imshow("gray", bw);
-	cv::findContours(bw.clone(), contours, CV_RETR_EXTERNAL, CV_CHAIN_APPROX_SIMPLE);
-	face_frame.copyTo(dst);
-	return bw;
-}
+
 cv::Mat SW_detection::imgproc_face_detection()
 {
 	// Downscale frame to m_resizedWidth width - keep aspect ratio
@@ -84,7 +65,7 @@ void SW_detection::detectFaceAllSizes(const cv::Mat &frame) // frme : resized fr
 	m_trackedFace = biggestFace(m_allFaces);
 
 	// Copy face template
-	m_faceTemplate = getFaceTemplate(frame, m_trackedFace); // getFaceTemplate : 
+	m_faceTemplate = getFaceTemplate(frame, m_trackedFace); // getFaceTemplate :
 
 	// Calculate roi
 	m_faceRoi = doubleRectSize(m_trackedFace, cv::Rect(0, 0, frame.cols, frame.rows));
@@ -153,7 +134,7 @@ void SW_detection::detectFacesTemplateMatching(const cv::Mat &frame)
 		m_templateMatchingStartTime = m_templateMatchingCurrentTime = 0;
 	}
 
-	// Template matching with last known face 
+	// Template matching with last known face
 	//cv::matchTemplate(frame(m_faceRoi), m_faceTemplate, m_matchingResult, CV_TM_CCOEFF);
 	cv::matchTemplate(frame(m_faceRoi), m_faceTemplate, m_matchingResult, CV_TM_SQDIFF_NORMED);
 	cv::normalize(m_matchingResult, m_matchingResult, 0, 1, cv::NORM_MINMAX, -1, cv::Mat());
@@ -261,46 +242,7 @@ double SW_detection::templateMatchingMaxDuration() const
 {
 	return m_templateMatchingMaxDuration;
 }
-///////////////////////from this shape detection /////////////////////////////////////
-cv::Point SW_detection::detect_shape()
-{
-	for (int i = 0; i < contours.size(); i++){
-		cv::approxPolyDP(cv::Mat(contours[i]), approx, cv::arcLength(cv::Mat(contours[i]), true)*0.02, true);
-		if (std::fabs(cv::contourArea(contours[i])) < 100 || !cv::isContourConvex(approx))
-			continue;
-		if (approx.size() >= 4 && approx.size() <= 6){ // else if
-			int vtc = approx.size();
-			if (vtc == 4) // rectangular
-			{
-				cv::Rect r = cv::boundingRect(contours[i]);
-				cv::Mat roi = dst(r);
-				cv::imshow("roi image ", roi);
-				center.x = r.x + (r.width) / 2;
-				center.y = r.y + (r.height) / 2;
-				//circle(dst, center, 3, cv::Scalar(0, 255, 0), -1, 8, 0);
-				cout << "RECTANGLE width / length / distance : " << r.width << " , " << r.height << " ] " << endl;
-				return center;
-			}
-		}
-		else // circle
-		{
-			double area = cv::contourArea(contours[i]);
-			cv::Rect r = cv::boundingRect(contours[i]);
-			int radius = r.width / 2;
-			if (std::abs(1 - ((double)r.width / r.height)) <= 0.2 &&
-				std::abs(1 - (area / (CV_PI * (radius*radius)))) <= 0.2){
-				cv::Rect r = cv::boundingRect(contours[i]);
-				cv::Mat roi = dst(r);
-				cv::imshow("roi image ", roi);
-				center.x = r.x + (r.width) / 2;
-				center.y = r.y + (r.height) / 2;
-				//circle(dst, center, 3, cv::Scalar(0, 255, 0), -1, 8, 0);
-				cout << "CIRCLE width and lenght : " << r.width << " , " << r.height << " ] " << endl;
-				return center;
-			}
-		}
-	}
-}
+
 cv::Point SW_detection::shape_position() const
 {
 	return center;
@@ -318,6 +260,7 @@ double SW_detection::angle(cv::Point pt1, cv::Point pt2, cv::Point pt0)
 	double dy2 = pt2.y - pt0.y;
 	return (dx1*dx2 + dy1*dy2) / sqrt((dx1*dx1 + dy1*dy1)*(dx2*dx2 + dy2*dy2) + 1e-10);
 }
+
 float SW_detection::distance_from_middle(cv::Point ob,float actual_distance)
 {
 	int x = mid.x - ob.x;
@@ -328,7 +271,6 @@ float SW_detection::distance_from_middle(cv::Point ob,float actual_distance)
 }
 SW_detection::~SW_detection()
 {
-	capture->release();
 	if (faceCascade != NULL) {
 		delete faceCascade;
 	}

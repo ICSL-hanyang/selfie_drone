@@ -1,0 +1,57 @@
+study link
+http://www.musoft-builders.nl/software/controlling-the-crazyflie/
+https://kr.mathworks.com/help/robotics/examples.html
+https://www.youtube.com/watch?v=rl0nuNylP_o
+https://mzahana.gitbooks.io/matmav-guide/content/general_example.html
+
+http://cafe.naver.com/openrt/2585
+
+http://www.einarsundgren.se/gstreamer-basic-real-time-streaming-tutorial/
+
+[출처] 로봇 운영체제 강좌 : ROS 빌드 시스템 (오픈소스 소프트웨어 & 하드웨어: 로봇 기술 공유 카페 (오로카)) |작성자 표윤s
+
+WITHOUT USING MAKE POSIX_SITL_DEFAULT RUN GAZEBO
+
+cd ~/catkin_ws/src/Firmware && roslaunch gazebo_ros empty_world.launch world_name:=$(pwd)/Tools/sitl_gazebo/worlds/iris.world
+
+make posix_sitl_default gazebo
+roslaunch for_practice practice.launch
+
+make posix_sitl_default gazebo - in 1 terminal and then do 
+roslaunch mavros px4.launch fcu_url:="udp://localhost:14540@localhost:14557"
+
+
+ubuntu es file finder link
+https://www.maketecheasier.com/install-and-configure-samba-in-ubuntu-for-file-sharing
+http://m.blog.naver.com/scw0531/220653503111
+
+sudo apt-get install ros-kinetic-urdf,kdl_parser,robot_state_publisher,collada_urdf
+sudo apt-get install ros-kinetic-joint-state-controller,effort-controllers,position-controllers
+  while(1){
+  trajectory_msgs::MultiDOFJointTrajectory trajectory_msg;
+  trajectory_pub.publish(trajectory_msg);
+  }
+binding by while(1)
+
+
+cd <Firmware_clone>
+make posix_sitl_default // at first time
+
+cd ~/catkin_ws/src/Firmware	
+source ~/catkin_ws/devel/setup.bash
+source Tools/setup_gazebo.bash $(pwd) $(pwd)/build_posix_sitl_default
+export ROS_PACKAGE_PATH=$ROS_PACKAGE_PATH:$(pwd)
+export ROS_PACKAGE_PATH=$ROS_PACKAGE_PATH:$(pwd)/Tools/sitl_gazebo
+roslaunch px4 posix_sitl.launch
+
+ -- this works with roslaunch for_practice practice.launch
+roslaunch px4 mavros_posix_sitl.launch -- this collide with roslaunch for_practice practice.launch
+just for such things pxh> commander takeoff
+
+but roslaunch for_practice practice.launch -- collision and process dead
+
+roslaunch mavros px4.launch fcu_url:=udp://:14540@localhost:14557 ? 14556
+
+
+
+
